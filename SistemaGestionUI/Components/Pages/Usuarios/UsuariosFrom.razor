@@ -1,0 +1,59 @@
+﻿@inject NavigationManager NavigationManager
+@inject UsuariosService usuarioService
+
+<EditForm Model="Usuario" OnValidSubmit="CrearOActualizarUsuario" FormName="usuario-form">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="usuario-nombre">Nombre</label>
+        <InputText type="text" class="form-control" id="usuario-nombre" @bind-Value="Usuario.Nombre" />
+    </div>
+
+    <div class="form-group">
+        <label for="usuario-apellido">Apellido</label>
+        <InputText type="text" class="form-control" id="usuario-apellido" @bind-Value="Usuario.Apellido" />
+    </div>
+
+    <div class="form-group">
+        <label for="usuario-nombreusuario">Nombre Usuario</label>
+        <InputText type="text" class="form-control" id="usuario-nombreusuario" @bind-Value="Usuario.NombreUsuario" />
+    </div>
+
+    <div class="form-group">
+        <label for="usuario-password">Password</label>
+        <InputText type="password" class="form-control" id="usuario-password" @bind-Value="Usuario.Contrasena" />
+    </div>
+
+    <div class="form-group">
+        <label for="usuario-mail">Mail</label>
+        <InputText type="email" class="form-control" id="usuario-mail" @bind-Value="Usuario.Mail" />
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-5">Guardar</button>
+
+</EditForm>
+
+@code {
+    [Parameter]
+    public Usuario Usuario { get; set; } = new Usuario();
+    public List<Usuario> Usuarios { get; set; } = new List<Usuario>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Usuarios = await usuarioService.GetUsuarios();
+    }
+    public async Task CrearOActualizarUsuario()
+    {
+        if (Usuario.Id > 0)
+        {
+            await usuarioService.UpdateUsuario(Usuario.Id,Usuario);
+        }
+        else
+        {
+            usuarioService.CreateUsuario(Usuario);
+        }
+
+        NavigationManager.NavigateTo("/Usuarios");
+    }
+}

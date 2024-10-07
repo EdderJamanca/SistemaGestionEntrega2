@@ -1,0 +1,28 @@
+﻿@page "/productosvendidos/{id:int}/editar"
+@inject ProductoVendidoService Service
+
+<h3>Edit Producto Vendido</h3>
+
+@if (ProductoVendido.Id == null)
+{
+    <p>No existe el producto vendido</p>
+}
+else
+{
+    <ProductoVendidoFrom ProductoVendido="ProductoVendido" />
+}
+
+@code {
+
+    [Parameter]
+    public int Id { get; set; }
+
+    private ProductoVendido? ProductoVendido = new ProductoVendido();
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        ProductoVendido = await Service.GetOneProductoVendido(Id);
+    }
+
+}

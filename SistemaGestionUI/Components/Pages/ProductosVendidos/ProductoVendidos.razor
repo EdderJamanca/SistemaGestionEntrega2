@@ -1,0 +1,69 @@
+﻿@page "/ProductoVendidos"
+@inject ProductoVendidoService Service
+<h3>Producto Vendidos</h3>
+
+<div class="container">
+    <div class="row">
+        <div class="col-6">
+            <div class="row">
+                <div class=col-6>
+                    <a href="/productovendido/new">
+                        <button class="btn btn-success">
+                            Nueva Producto Vendidos
+                        </button>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <table class="table">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Id</th>
+                    <th>IdProducto</th>
+                    <th>Stock</th>
+                    <th>IdVenta</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (ProductoVendido pvendido in productovendido)
+                {
+                    <tr>
+                        <td>@pvendido.Id</td>
+                        <td>@pvendido.producto.Descripcion</td>
+                        <td>@pvendido.Stock</td>
+                        <td>@pvendido.producto.Descripcion</td>
+                        <td>
+                            <button @onclick="@(() => EliminarProductoVendido(pvendido.Id))" class="btn btn-danger">
+                                Eliminar
+                            </button>
+                            <a href="/usuariio/@pvendido.Id/Editar">Editar</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+
+@code {
+    private List<ProductoVendido> productovendido = new List<ProductoVendido>();
+
+    private string filtro = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        productovendido = await Service.GetProductsVendido();
+    }
+
+    public async Task EliminarProductoVendido(int id)
+    {
+        await Service.DeleteProductoVendido(id);
+        productovendido = await Service.GetProductsVendido();
+    }
+}

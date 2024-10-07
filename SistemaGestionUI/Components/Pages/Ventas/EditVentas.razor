@@ -1,0 +1,27 @@
+﻿@page "/venta/{id:int}/editar"
+@inject VentasServices ventaService
+
+<h3>Edit Venta</h3>
+
+@if(Venta.Id == null)
+{
+    <p>No existe el venta</p>
+}
+else
+{
+    <VentasFrom Venta="Venta" />
+}
+
+@code {
+
+    [Parameter]
+    public int Id { get; set; }
+
+    private Venta? Venta = new Venta();
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        Venta =await ventaService.GetOneVenta(Id);
+    }
+}

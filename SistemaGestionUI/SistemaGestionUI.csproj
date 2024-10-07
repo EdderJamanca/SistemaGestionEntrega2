@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SistemaGestionEntities\SistemaGestionEntities.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Components\Pages\Productos\" />
+    <Folder Include="Components\Pages\Usuarios\" />
+  </ItemGroup>
+  
+  
+</Project>

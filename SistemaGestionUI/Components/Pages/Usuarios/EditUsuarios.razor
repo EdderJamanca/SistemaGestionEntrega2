@@ -1,0 +1,28 @@
+﻿@page "/usuario/{id:int}/editar"
+@inject UsuariosService Service
+
+<h3>Edit Usuario</h3>
+
+@if(Usuario.Id == null)
+{
+    <p>No existe el Usuario</p>
+}
+else
+{
+    <UsuariosFrom Usuario="Usuario"/>
+}
+
+@code {
+
+    [Parameter]
+    public int Id { get; set; }
+
+    private Usuario? Usuario = new Usuario();
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        Usuario = await Service.GetOneUsuario(Id);
+    }
+
+}

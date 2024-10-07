@@ -1,0 +1,61 @@
+﻿@inject NavigationManager NavigationManager
+@inject ProductosService Service
+@inject UsuariosService usuarioService
+
+<EditForm Model="Producto" OnValidSubmit="CrearOActualizarProducto" FormName="productos-form">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="descripcion">Descripcion</label>
+        <InputText type="text" class="form-control" id="descripcion" @bind-Value="Producto.Descripcion" />
+    </div>
+    <div class="form-group">
+        <label for="precio-compra">Costo</label>
+        <InputNumber type="number" class="form-control" id="precio-compra" @bind-Value="Producto.Costo" />
+    </div>
+    <div class="form-group">
+        <label for="precio-compra">Precio Venta</label>
+        <InputNumber type="number" class="form-control" id="precio-compra" @bind-Value="Producto.PrecioVenta" />
+    </div>
+
+    <div class="form-group">
+        <label for="precio-compra">Stock</label>
+        <InputNumber type="number" class="form-control" id="precio-compra" @bind-Value="Producto.Stock" />
+    </div>
+    <div class="form-group">
+        <label for="precio-compra">Id Usuario</label>
+        <InputSelect class="form-control" id="categoria" @bind-Value="Producto.IdUsuario">
+            @foreach (var user in Usuarios)
+            {
+                <option value="@user.Id">@user.Nombre</option>
+            }
+        </InputSelect>
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-5">Guardar</button>
+</EditForm>
+
+@code {
+    [Parameter]
+    public Producto Producto { get; set; } = new Producto();
+    public List<Usuario> Usuarios { get; set; } = new List<Usuario>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Usuarios = await usuarioService.GetUsuarios();
+    }
+    public async Task CrearOActualizarProducto()
+    {
+        if (Producto.Id > 0)
+        {
+            await Service.UpdateProducto(Producto.Id,Producto);
+        }
+        else
+        {
+            await Service.CreateProducto(Producto);
+        }
+
+        NavigationManager.NavigateTo("/productos");
+    }
+}

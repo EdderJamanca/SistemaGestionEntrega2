@@ -1,0 +1,73 @@
+﻿@page "/Usuarios"
+@inject UsuariosService Service
+<h3>Usuarios</h3>
+<div class="container">
+    <div class="row">
+        <div class="col-6">
+            <div class="row">
+                <div class=col-6>
+                    <a href="/usuario/new">
+                        <button class="btn btn-success">
+                            Nuevo Usuario
+                        </button>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <table class="table">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Id</th>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>NombreUsuario</th>
+                    <th>Contrasena</th>
+                    <th>Mail</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (Usuario user in usuarios)
+                {
+                    <tr>
+                        <td>@user.Id</td>
+                        <td>@user.Nombre</td>
+                        <td>@user.Apellido</td>
+                        <td>@user.NombreUsuario</td>
+                        <td>@user.Contrasena</td>
+                       
+                        <td>@user.Mail</td>
+                        <td>
+                            <button @onclick="@(() => EliminarUsuario(user.Id))" class="btn btn-danger">
+                                Eliminar
+                            </button>
+                            <a href="/usuario/@user.Id/Editar">Editar</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+@code {
+    private List<Usuario> usuarios = new List<Usuario>();
+
+    private string filtro = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        usuarios = await Service.GetUsuarios();
+    }
+
+    public async Task EliminarUsuario(int id)
+    {
+        await Service.DeleteUsuario(id);
+        usuarios = await Service.GetUsuarios();
+    }
+
+}

@@ -1,0 +1,49 @@
+﻿@inject NavigationManager NavigationManager
+@inject UsuariosService usuarioService
+@inject VentasServices ventaService
+
+<EditForm Model="Venta" OnValidSubmit="CrearOActualizarVenta" FormName="venta-form">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="venta-comentario">Comentario</label>
+        <InputText type="text" class="form-control" id="usuario-nombre" @bind-Value="Venta.Comentario" />
+    </div>
+    <div class="form-group">
+        <label for="precio-compra">Id Usuario</label>
+        <InputSelect class="form-control" id="categoria" @bind-Value="Venta.IdUsuario">
+            @foreach (var user in Usuarios)
+            {
+                <option value="@user.Id">@user.Nombre</option>
+            }
+        </InputSelect>
+    </div>
+    <button type="submit" class="btn btn-primary mt-5">Guardar</button>
+
+</EditForm>
+
+@code {
+    [Parameter]
+    public Venta Venta { get; set; } = new Venta();
+    public List<Usuario> Usuarios { get; set; } = new List<Usuario>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Usuarios = await usuarioService.GetUsuarios();
+    }
+    public async Task CrearOActualizarVenta()
+    {
+        if (Venta.Id > 0)
+        {
+            await ventaService.UpdateVenta(Venta.Id ,Venta);
+        }
+        else
+        {
+            await ventaService.CreateVenta(Venta);
+        }
+
+        NavigationManager.NavigateTo("/Ventas");
+    }
+
+}
