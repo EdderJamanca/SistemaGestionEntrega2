@@ -12,10 +12,10 @@ namespace SistemaGestionBussiness
             IConfiguration configuration)
         {
             services.ConfigureDataLayer(configuration);
-            services.AddScoped<ProductosService>();
-            services.AddScoped<UsuariosService>();
-            services.AddScoped<ProductosVendidosService>();
-            services.AddScoped<VentasService>();
+            services.AddScoped<IProductosService, ProductosService>();
+            services.AddScoped<IUsuariosService,UsuariosService>();
+            services.AddScoped<IProductosVendidosService,ProductosVendidosService>();
+            services.AddScoped<IVentasService,VentasService>();
             return services;
         }
     }

@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SistemaGestionData.Context;
 using SistemaGestionData.DataAccess;
+using SistemaGestionData.InterfaceDataAccess;
 
 namespace SistemaGestionData
 {
@@ -12,17 +13,18 @@ namespace SistemaGestionData
         public static IServiceCollection ConfigureDataLayer(this IServiceCollection services,
              IConfiguration configuration)
         {
-            services.AddDbContext<SistemaGestionContext>(
+            services.AddDbContext<ISistemaGestionContext,SistemaGestionContext>(
                   optionBuilder => {
                       var connectionString = configuration.GetConnectionString("Coderhouse");
                       optionBuilder.UseSqlServer(connectionString);
                   }
               );
-            services.AddDbContext<SistemaGestionContext>();
-            services.AddScoped<ProductosDataAccess>();
-            services.AddScoped<ProductoVendidoDataAccess>();
-            services.AddScoped<UsuarioDataAccess>();
-            services.AddScoped<VentaDataAccess>();
+            services.AddDbContext<ISistemaGestionContext,SistemaGestionContext>();
+            services.AddScoped<IProductosDataAccess,ProductosDataAccess>();
+            services.AddScoped<IProductoVendidoDataAccess, ProductoVendidoDataAccess>();
+            services.AddScoped<IUsuarioDataAccess,UsuarioDataAccess>();
+            services.AddScoped<IVentaDataAccess, VentaDataAccess>();
+           
             return services;
         }
     }

@@ -1,16 +1,18 @@
 ﻿@page "/productos/{id:int}/editar"
 @inject ProductosService Service
+<div class="shadow-lg bg-white table-bordered rounded-3 py-5">
 
-<h3>EditProducto</h3>
+    <h3 class="text-center">EditProducto</h3>
 
-@if(Producto.Id == null)
-{
-    <p>No existe el producto</p>
-}
-else
-{
-    <ProductosFrom Producto="Producto" />
-}
+    @if(Producto.Id == null)
+    {
+        <p>No existe el producto</p>
+    }
+    else
+    {
+        <ProductosFrom Producto="Producto" />
+    }
+</div>
 
 @code {
 

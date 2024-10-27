@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SistemaGestionData.Context;
+using SistemaGestionData.InterfaceDataAccess;
 using SistemaGestionEntities;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace SistemaGestionData.DataAccess
 {
-    public class VentaDataAccess
+    public class VentaDataAccess : IVentaDataAccess
     {
         private readonly SistemaGestionContext _context;
 
@@ -19,42 +20,42 @@ namespace SistemaGestionData.DataAccess
             _context = context;
         }
 
-        public  List<Venta> listaVenta()
+        public List<Venta> listaVenta()
         {
             return _context.Ventas
-                .Include(x=>x.Usuario)
+                .Include(x => x.Usuario)
                 .ToList();
         }
 
-        public  Venta createVenta(Venta venta)
+        public Venta createVenta(Venta venta)
         {
 
             _context.Ventas.Add(venta);
             _context.SaveChanges();
 
             return venta;
-            
+
         }
-        public  Venta ObtenerVenta(int idventa)
+        public Venta ObtenerVenta(int idventa)
         {
 
-                Venta venta = _context.Ventas.FirstOrDefault(p => p.Id == idventa);
-                return venta;
+            Venta venta = _context.Ventas.FirstOrDefault(p => p.Id == idventa);
+            return venta;
         }
 
-        public async void modificarVenta(int id,Venta venta)
+        public async void modificarVenta(int id, Venta venta)
         {
             try
             {
-                    Venta ventaActual = ObtenerVenta(id);
-                    if (ventaActual != null)
-                    {
-                        ventaActual.Comentario = venta.Comentario;
+                Venta ventaActual = ObtenerVenta(id);
+                if (ventaActual != null)
+                {
+                    ventaActual.Comentario = venta.Comentario;
 
-                        _context.SaveChanges();
-                    }
+                    _context.SaveChanges();
+                }
 
-                
+
             }
             catch (Exception ex)
             {
@@ -62,7 +63,7 @@ namespace SistemaGestionData.DataAccess
             }
 
         }
-        public  void DeleteVenta(int id)
+        public void DeleteVenta(int id)
         {
             try
             {

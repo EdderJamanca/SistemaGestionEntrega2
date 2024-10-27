@@ -1,7 +1,8 @@
 ﻿@page "/usuario/new"
-<h3>CreateUsuario</h3>
-<UsuariosFrom Usuario="NuevoUsuario" />
-
+<div class="shadow-lg bg-white table-bordered rounded-3 py-5">
+    <h3 class="text-center">CreateUsuario</h3>
+    <UsuariosFrom Usuario="NuevoUsuario" />
+</div>
 @code {
     private Usuario NuevoUsuario = new Usuario();
 }

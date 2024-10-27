@@ -1,4 +1,5 @@
 ﻿using SistemaGestionData.DataAccess;
+using SistemaGestionData.InterfaceDataAccess;
 using SistemaGestionEntities;
 using System;
 using System.Collections.Generic;
@@ -8,11 +9,20 @@ using System.Threading.Tasks;
 
 namespace SistemaGestionBussiness.Services
 {
-    public  class VentasService
+    public interface IVentasService
     {
-        private VentaDataAccess _ventaDataAccess;
+        Venta CreateVenta(Venta venta);
+        void DeleteVenta(int id);
+        Venta? GetOneVenta(int id);
+        List<Venta> GetVentas();
+        void UpdateVenta(int id, Venta venta);
+    }
 
-        public VentasService(VentaDataAccess ventaDataAccess)
+    public class VentasService : IVentasService
+    {
+        private IVentaDataAccess _ventaDataAccess;
+
+        public VentasService(IVentaDataAccess ventaDataAccess)
         {
             _ventaDataAccess = ventaDataAccess;
         }
@@ -27,10 +37,10 @@ namespace SistemaGestionBussiness.Services
         }
         public Venta CreateVenta(Venta venta)
         {
-          return  _ventaDataAccess.createVenta(venta);
+            return _ventaDataAccess.createVenta(venta);
         }
 
-        public void UpdateVenta(int id,Venta venta)
+        public void UpdateVenta(int id, Venta venta)
         {
             _ventaDataAccess.modificarVenta(id, venta);
         }

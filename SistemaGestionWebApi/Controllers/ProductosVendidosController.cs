@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SistemaGestionBussiness.Services;
 using SistemaGestionEntities;
 
@@ -6,11 +7,12 @@ namespace SistemaGestionWebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    //[Authorize]
     public class ProductosVendidosController : ControllerBase
     {
         private readonly ILogger<ProductosVendidosController> _logger;
-        private readonly ProductosVendidosService _productosVendidosService;
-        public ProductosVendidosController(ILogger<ProductosVendidosController> logger, ProductosVendidosService productosVendidosService)
+        private readonly IProductosVendidosService _productosVendidosService;
+        public ProductosVendidosController(ILogger<ProductosVendidosController> logger, IProductosVendidosService productosVendidosService)
         {
             _logger = logger;
             _productosVendidosService = productosVendidosService;
@@ -25,6 +27,11 @@ namespace SistemaGestionWebApi.Controllers
         public ActionResult<ProductoVendido> GetOneProductoVendido([FromRoute(Name = "id")]  int id)
         {
             return _productosVendidosService.GetOneProductoVendido(id);
+        }
+        [HttpGet("detalle/{idventa:int}")]
+        public ActionResult<List<ProductoVendido>> ObtenerProductosVendidos(int idventa)
+        {
+            return  _productosVendidosService.ObtenerProductosVendidos(idventa);
         }
         [HttpPost]
         public ActionResult<ProductoVendido> CreateProductoVendido([FromBody]  ProductoVendido productovendido)

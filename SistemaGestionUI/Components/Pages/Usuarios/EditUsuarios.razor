@@ -1,7 +1,7 @@
 ﻿@page "/usuario/{id:int}/editar"
 @inject UsuariosService Service
-
-<h3>Edit Usuario</h3>
+<div class="shadow-lg bg-white table-bordered rounded-3 py-5">
+<h3 class="text-center">Edit Usuario</h3>
 
 @if(Usuario.Id == null)
 {
@@ -11,6 +11,7 @@ else
 {
     <UsuariosFrom Usuario="Usuario"/>
 }
+</div>
 
 @code {
 

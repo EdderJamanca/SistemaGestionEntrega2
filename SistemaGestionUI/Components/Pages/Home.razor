@@ -1,4 +1,66 @@
 ﻿@page "/"
+@inject UsuariosService usuarioService
+@inject VentasServices ventaService
+@inject ProductosService pruductoService
+@inject ProductoVendidoService Service
+<AuthorizeView>
+    <Authorized>
+        <div class="row gap-4 d-flex justify-content-center">
+             <div class="col-5">
+                <div class="card p-5 text-white shadow-lg" style="background-color:#2ECC71">
+                     <div class="d-flex justify-content-between">
+                        <h3>USUARIOS</h3>
+                        <h5>@countUsuarios</h5>
+                     </div>
+                 </div>
+             </div>
+             <div class="col-5">
+                <div class="card p-5  text-white shadow-lg" style="background-color:#34495E">
+                    <div class="d-flex justify-content-between">
+                        <h3>PRODUCTOS</h3>
+                        <h5>@countProductos</h5>
+                    </div>
+                </div>
+             </div>
+             <div class="col-5">
+                <div class="card p-5  text-white shadow-lg" style="background-color:#E67E22">
+                    <div class="d-flex justify-content-between">
+                        <h3>VENTAS</h3>
+                        <h5>@countVentas</h5>
+                     </div>
+                </div>
+             </div>
+             <div class="col-5">
+                <div class="card p-5  text-white shadow-lg" style="background-color:#4A90E2">
+                    <div class="d-flex justify-content-between">
+                        <h3>PRODUCTO VENDIDO</h3>
+                        <h5>@countProductoVendidos</h5>
+                    </div>
+                </div>
+             </div>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+            <SistemaGestionUI.Components.Pages.Auth.Login></SistemaGestionUI.Components.Pages.Auth.Login>
+    </NotAuthorized>
+</AuthorizeView>
+@code {
+    private int countUsuarios { get; set; } = 0;
+    private int countVentas { get; set; } = 0;
+    private int countProductos { get; set; } = 0;
+    private int countProductoVendidos { get; set; } = 0;
 
-<PageTitle>Bienvenido al Sistema de Gestion</PageTitle>
-<h1>Bienvenido al Sistema de Gestion</h1>
+
+    protected override async Task OnInitializedAsync()
+    {
+        List<Usuario> users = await usuarioService.GetUsuarios();
+        List<Venta> ventas = await ventaService.GetVentas();
+        List<Producto> productos = await pruductoService.GetProducts();
+        List<ProductoVendido> productosven = await Service.GetProductsVendido();
+
+        countUsuarios = users.Count();
+        countVentas = ventas.Count();
+        countProductos= productos.Count();
+        countProductoVendidos = productosven.Sum(x => x.Stock);
+    }
+}

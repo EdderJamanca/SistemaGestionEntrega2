@@ -1,58 +1,60 @@
 ﻿@page "/Usuarios"
 @inject UsuariosService Service
-<h3>Usuarios</h3>
-<div class="container">
-    <div class="row">
-        <div class="col-6">
-            <div class="row">
-                <div class=col-6>
-                    <a href="/usuario/new">
-                        <button class="btn btn-success">
-                            Nuevo Usuario
-                        </button>
-                    </a>
+@inject NavigationManager NavigationManager
+@inject SweetAlertService Swal
+    <h3 class="text-center">Usuarios</h3>
+    <div class="container">
+        <div class="row">
+            <div class="col-6">
+                <div class="row">
+                    <div class=col-6>
+                        <a href="/usuario/new">
+                            <button class="btn btn-success">
+                                Nuevo Usuario
+                            </button>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="row">
-        <table class="table">
-            <thead class="thead-dark">
-                <tr>
-                    <th>Id</th>
-                    <th>Nombre</th>
-                    <th>Apellido</th>
-                    <th>NombreUsuario</th>
-                    <th>Contrasena</th>
-                    <th>Mail</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (Usuario user in usuarios)
-                {
+        <div class="row mt-2">
+            <table class="table table-responsive-lg table-bordered mx-auto table-light">
+                <thead class="table-primary text-center">
                     <tr>
-                        <td>@user.Id</td>
-                        <td>@user.Nombre</td>
-                        <td>@user.Apellido</td>
-                        <td>@user.NombreUsuario</td>
-                        <td>@user.Contrasena</td>
-                       
-                        <td>@user.Mail</td>
-                        <td>
-                            <button @onclick="@(() => EliminarUsuario(user.Id))" class="btn btn-danger">
-                                Eliminar
-                            </button>
-                            <a href="/usuario/@user.Id/Editar">Editar</a>
-                        </td>
+                        <th class="text-center">Id</th>
+                        <th class="text-center">Nombre</th>
+                        <th class="text-center">Apellido</th>
+                        <th class="text-center">NombreUsuario</th>
+                        <th class="text-center">Mail</th>
+                        <th class="text-center">Acciones</th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach (Usuario user in usuarios)
+                    {
+                        <tr>
+                            <td class="text-center">@user.Id</td>
+                            <td class="text-center">@user.Nombre</td>
+                            <td class="text-center">@user.Apellido</td>
+                            <td class="text-center">@user.NombreUsuario</td>
+                            <td class="text-center">@user.Mail</td>
+                            <td class="text-center">
+                                <button @onclick="@(() => EliminarUsuario(user.Id))" class="btn btn-danger">
+                                    Eliminar
+                                </button>
+  
+                                <button class="btn btn-warning text-white" @onclick="@(()=>EditarUsuario(@user.Id))">
+                                    Editar
+                                </button>
+                        
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
     </div>
-
-</div>
-
 @code {
     private List<Usuario> usuarios = new List<Usuario>();
 
@@ -66,8 +68,25 @@
 
     public async Task EliminarUsuario(int id)
     {
-        await Service.DeleteUsuario(id);
-        usuarios = await Service.GetUsuarios();
+        var resultado = await Swal.FireAsync(new SweetAlertOptions
+            {
+                Title = "¿Estas seguro?",
+                Text = "se eliminar el usuario",
+                Icon = SweetAlertIcon.Warning,
+                ShowCancelButton = true,
+                ConfirmButtonText = "Si, continuar",
+                CancelButtonText = "No, cancelar"
+            });
+        var confirmado = !string.IsNullOrEmpty(resultado.Value);
+        if (confirmado && resultado.IsConfirmed)
+        {
+            await Service.DeleteUsuario(id);
+            usuarios = await Service.GetUsuarios();
+        }
+    }
+    public async Task EditarUsuario(int id)
+    {
+        NavigationManager.NavigateTo("/usuario/"+id+"/Editar");
     }
 
 }

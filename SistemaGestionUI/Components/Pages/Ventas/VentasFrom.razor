@@ -1,35 +1,112 @@
-﻿@inject NavigationManager NavigationManager
+﻿
+@inject NavigationManager NavigationManager
 @inject UsuariosService usuarioService
 @inject VentasServices ventaService
+@inject ProductosService pruductoService
+@inject ProductoVendidoService Service
+@inject SweetAlertService Swal
+<div class="w-50 mx-auto">
+    <EditForm Model="FormularioVentaDto" OnValidSubmit="CrearOActualizarVenta" FormName="venta-form">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
 
-<EditForm Model="Venta" OnValidSubmit="CrearOActualizarVenta" FormName="venta-form">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
+        <div class="form-group">
+            <label for="venta-comentario">Comentario</label>
+            <InputText type="text" class="form-control" id="usuario-nombre" @bind-Value="FormularioVentaDto.Venta.Comentario" />
+        </div>
+        <div class="form-group">
+            <label for="precio-compra">Usuario</label>
+            <InputSelect class="form-control" id="categoria" @bind-Value="FormularioVentaDto.Venta.IdUsuario">
+                <option value="0">seleccione un usuario</option>
+                @foreach (var user in Usuarios)
+                {
+                    <option value="@user.Id">@user.Nombre</option>
+                }
+            </InputSelect>
+        </div>
+        <div class="row">
+            <div class="col-4">
+                <div class="form-group">
+                    <label for="pprvendido-producto">Producto</label>
+                    <InputSelect class="form-control" id="pprvendido-producto" @bind-Value="FormularioVentaDto.Producto.Id">
+                        <option value="0">Selecciones un producto</option>
+                        @foreach (var producto in Productos)
+                        {
+                            <option value="@producto.Id">@producto.Descripcion</option>
+                        }
+                    </InputSelect>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="form-group">
+                <label for="pprvendido-stock">Stock</label>
+                <InputNumber type="number" class="form-control" id="pprvendido-stock" @bind-Value="FormularioVentaDto.Producto.Stock" />
+            </div>
+            </div>
+            <div class="col-4 d-flex justify-content-center align-baseline">
+                   <div >
+                    <button type="button" class="btn btn-primary" @onclick="@(()=>add())" style="position:relative; top:1.1rem">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
+                                <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4" />
+                            </svg>
+                        </button>
+                   </div>
+              
+            </div>
+        </div>
+        <!--seccion de la tabla-->
+        <table class="table table-responsive-lg table-bordered mx-auto table-light mt-5">
+            <thead class="table-primary text-center">
+                <tr>
+                    <th>#</th>
+                    <th>Descripcion</th>
+                    <th>PrecioVenta</th>
+                    <th>Stock</th>
+                    <th>total</th>
+                    <th>Accion</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (DetalleVentaDto producto in newProductos)
+                {
+                    <tr>
+                        <td class="text-center">@index</td>
+                        <td class="text-center">@producto.NameProducto</td>
+                        <td class="text-center">@producto.Stock</td>
+                        <td class="text-center">@producto.precioVenta</td>
+                        <td class="text-center">@producto.Total</td>
+                        <td class="text-center mt-2">
+                            <button @onclick="@(() => quitar(index))" class="btn btn-danger">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                                    <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z" />
+                                </svg>
+                            </button>
+                        </td>
+                    </tr>
+                    index++;
+                }
+            </tbody>
+        </table>
+        <!--en detalle de la venta-->
+        <div>
+            <button type="button" class="btn btn-primary mt-5" @onclick="@(()=>CrearOActualizarVenta())">Guardar</button>
+            <button type="button" class="btn btn-danger mt-5" @onclick="@(()=>regresar())">Cancelar</button>
+        </div>
 
-    <div class="form-group">
-        <label for="venta-comentario">Comentario</label>
-        <InputText type="text" class="form-control" id="usuario-nombre" @bind-Value="Venta.Comentario" />
-    </div>
-    <div class="form-group">
-        <label for="precio-compra">Id Usuario</label>
-        <InputSelect class="form-control" id="categoria" @bind-Value="Venta.IdUsuario">
-            @foreach (var user in Usuarios)
-            {
-                <option value="@user.Id">@user.Nombre</option>
-            }
-        </InputSelect>
-    </div>
-    <button type="submit" class="btn btn-primary mt-5">Guardar</button>
-
-</EditForm>
+    </EditForm>
+</div>
 
 @code {
     [Parameter]
+    public FormularioVentaDto FormularioVentaDto { get; set; } = new FormularioVentaDto();
     public Venta Venta { get; set; } = new Venta();
     public List<Usuario> Usuarios { get; set; } = new List<Usuario>();
-
+    public List<Producto> Productos { get; set; } = new List<Producto>();
+    public List<DetalleVentaDto> newProductos { get; set; } = new List<DetalleVentaDto>();
+    public int index { get; set; } = 1;
     protected override async Task OnInitializedAsync()
     {
+        Productos = await pruductoService.GetProducts();
         Usuarios = await usuarioService.GetUsuarios();
     }
     public async Task CrearOActualizarVenta()
@@ -40,10 +117,69 @@
         }
         else
         {
-            await ventaService.CreateVenta(Venta);
-        }
+            Venta newVenta = new Venta()
+            {
+                    Comentario = FormularioVentaDto.Venta.Comentario,
+                    IdUsuario = FormularioVentaDto.Venta.IdUsuario
+            };
 
+            if (validarForm(newVenta))
+            {
+                var venta = await ventaService.CreateVenta(newVenta);
+
+                for (int i=0; i < newProductos.Count(); i++)
+                {
+                    ProductoVendido newProductoVendido = new ProductoVendido()
+                        {
+                            IdProducto = newProductos[i].IdProducto,
+                            Stock = newProductos[i].Stock,
+                            IdVenta = venta.Id,
+                        };
+                    await Service.CreateProductoVendido(newProductoVendido);
+                }
+                NavigationManager.NavigateTo("/Ventas");
+            }
+        }
+    }
+    public async Task regresar()
+    {
         NavigationManager.NavigateTo("/Ventas");
     }
+    private bool validarForm(Venta venta)
+    {
+        if (venta.Comentario == "" || venta.IdUsuario == 0)
+        {
+            var resultado =  Swal.FireAsync(new SweetAlertOptions
+                {
 
+                    Text = "Todos los campos son requerido",
+                    Icon = SweetAlertIcon.Warning,
+                    ConfirmButtonText = "OK",
+                });
+            return false;
+        }
+        return true;
+    }
+
+    public async Task add()
+    {
+        DetalleVentaDto newProducto = new DetalleVentaDto()
+            {
+                Id=index,
+                NameProducto = Productos.Where(x => x.Id == FormularioVentaDto.Producto.Id).Select(x=>x.Descripcion).FirstOrDefault(),
+                Stock = FormularioVentaDto.Producto.Stock,
+                precioVenta = Productos.Where(x => x.Id == FormularioVentaDto.Producto.Id).Select(x => x.PrecioVenta).FirstOrDefault(),
+                IdProducto = FormularioVentaDto.Producto.Id,
+            };
+        newProducto.Total = newProducto.Stock * newProducto.precioVenta;
+        newProductos.Add(newProducto);
+
+        FormularioVentaDto.Producto.Id = 0;
+        FormularioVentaDto.Producto.Stock = 0;
+    }
+
+    private async Task quitar(int index)
+    {
+        this.newProductos = this.newProductos.Where(x => x.Id != index).ToList();
+    }
 }

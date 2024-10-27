@@ -1,16 +1,18 @@
 ﻿using SistemaGestionBussiness.Services;
 using SistemaGestionEntities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace SistemaGestionWebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    //[Authorize]
     public class ProductosController: ControllerBase
     {
         private readonly ILogger<ProductosController> _logger;
-        private readonly ProductosService _productosService;
-        public ProductosController(ILogger<ProductosController> logger, ProductosService productosService)
+        private readonly IProductosService _productosService;
+        public ProductosController(ILogger<ProductosController> logger, IProductosService productosService)
         {
             _logger = logger;
             _productosService = productosService;

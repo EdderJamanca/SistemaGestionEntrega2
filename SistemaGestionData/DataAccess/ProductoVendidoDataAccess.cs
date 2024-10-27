@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SistemaGestionData.Context;
+using SistemaGestionData.InterfaceDataAccess;
 using SistemaGestionEntities;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,9 @@ using System.Threading.Tasks;
 
 namespace SistemaGestionData.DataAccess
 {
-    public class ProductoVendidoDataAccess
+
+
+    public class ProductoVendidoDataAccess : IProductoVendidoDataAccess
     {
         private readonly SistemaGestionContext _context;
 
@@ -19,13 +22,13 @@ namespace SistemaGestionData.DataAccess
             _context = context;
         }
 
-        public  List<ProductoVendido> listaProductoVendido()
+        public List<ProductoVendido> listaProductoVendido()
         {
 
-                return _context.ProductoVendidos
-                .Include(x=>x.producto)
-                .ThenInclude(x=>x.Usuario)
-                .ToList();
+            return _context.ProductoVendidos
+            .Include(x => x.producto)
+            .ThenInclude(x => x.Usuario)
+            .ToList();
         }
 
         public ProductoVendido createProductoVendido(ProductoVendido productoVendido)
@@ -34,7 +37,7 @@ namespace SistemaGestionData.DataAccess
             _context.ProductoVendidos.Add(productoVendido);
             _context.SaveChanges();
 
-            var producto = _context.Productos.Where(x=>x.Id == productoVendido.IdProducto).ToList();
+            var producto = _context.Productos.Where(x => x.Id == productoVendido.IdProducto).ToList();
             producto[0].Stock = producto[0].Stock - productoVendido.Stock;
 
             _context.Productos.Update(producto[0]);
@@ -43,7 +46,7 @@ namespace SistemaGestionData.DataAccess
             return productoVendido;
 
         }
-        public  ProductoVendido ObtenerProductoVendido(int id)
+        public ProductoVendido ObtenerProductoVendido(int id)
         {
 
             ProductoVendido productoVendido = _context.ProductoVendidos.FirstOrDefault(p => p.Id == id);
@@ -51,7 +54,19 @@ namespace SistemaGestionData.DataAccess
 
         }
 
-        public  void modificarProductoVendido(int id, ProductoVendido data)
+        public List<ProductoVendido> ObtenerProductosVendidos(int idventa)
+        {
+
+            List<ProductoVendido> productoVendidos = _context.ProductoVendidos
+                .Where(p => p.IdVenta == idventa)
+                .Include(x => x.producto)
+                 .ThenInclude(x => x.Usuario)
+                .ToList();
+            return productoVendidos;
+
+        }
+
+        public void modificarProductoVendido(int id, ProductoVendido data)
         {
 
             ProductoVendido productoVendidoActual = ObtenerProductoVendido(id);
@@ -69,17 +84,17 @@ namespace SistemaGestionData.DataAccess
             }
 
         }
-        public  void DeleteProductoVendido(int id)
+        public void DeleteProductoVendido(int id)
         {
 
 
-                var prodcutoVendido = ObtenerProductoVendido(id);
-                if (prodcutoVendido != null)
-                {
-                    _context.ProductoVendidos.Remove(prodcutoVendido);
-                    _context.SaveChanges(); // Guardar cambios en la base de datos
-                }
-        
+            var prodcutoVendido = ObtenerProductoVendido(id);
+            if (prodcutoVendido != null)
+            {
+                _context.ProductoVendidos.Remove(prodcutoVendido);
+                _context.SaveChanges(); // Guardar cambios en la base de datos
+            }
+
         }
     }
 }

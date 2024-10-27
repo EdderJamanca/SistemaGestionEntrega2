@@ -1,4 +1,5 @@
 ﻿using SistemaGestionData.DataAccess;
+using SistemaGestionData.InterfaceDataAccess;
 using SistemaGestionEntities;
 using System;
 using System.Collections.Generic;
@@ -8,11 +9,21 @@ using System.Threading.Tasks;
 
 namespace SistemaGestionBussiness.Services
 {
-    public class ProductosVendidosService
+    public interface IProductosVendidosService
     {
-        private ProductoVendidoDataAccess _productosVendidoDataAccess;
+        ProductoVendido CreateProductoVendido(ProductoVendido productovendido);
+        void DeleteProductoVendido(int id);
+        ProductoVendido? GetOneProductoVendido(int id);
+        List<ProductoVendido> GetProductsVendido();
+        List<ProductoVendido> ObtenerProductosVendidos(int idventa);
+        void UpdateProductoVendido(int id, ProductoVendido productovendido);
+    }
 
-        public ProductosVendidosService(ProductoVendidoDataAccess productosVendidoDataAccess)
+    public class ProductosVendidosService : IProductosVendidosService
+    {
+        private IProductoVendidoDataAccess _productosVendidoDataAccess;
+
+        public ProductosVendidosService(IProductoVendidoDataAccess productosVendidoDataAccess)
         {
             _productosVendidoDataAccess = productosVendidoDataAccess;
         }
@@ -27,12 +38,16 @@ namespace SistemaGestionBussiness.Services
         }
         public ProductoVendido CreateProductoVendido(ProductoVendido productovendido)
         {
-           return _productosVendidoDataAccess.createProductoVendido(productovendido);
+            return _productosVendidoDataAccess.createProductoVendido(productovendido);
+        }
+        public List<ProductoVendido> ObtenerProductosVendidos(int idventa)
+        {
+            return _productosVendidoDataAccess.ObtenerProductosVendidos(idventa);
         }
 
-        public void UpdateProductoVendido(int id, ProductoVendido productovendido)
+            public void UpdateProductoVendido(int id, ProductoVendido productovendido)
         {
-            _productosVendidoDataAccess.modificarProductoVendido(id,productovendido);
+            _productosVendidoDataAccess.modificarProductoVendido(id, productovendido);
         }
         public void DeleteProductoVendido(int id)
         {

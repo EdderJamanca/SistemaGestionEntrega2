@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SistemaGestionData.Context;
+using SistemaGestionData.InterfaceDataAccess;
 using SistemaGestionEntities;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace SistemaGestionData.DataAccess
 {
-    public class ProductosDataAccess
+    public class ProductosDataAccess : IProductosDataAccess
     {
         private readonly SistemaGestionContext _context;
 
@@ -20,17 +21,12 @@ namespace SistemaGestionData.DataAccess
         }
 
 
-        public  List<Producto> GetAllProductos()
+        public List<Producto> GetAllProductos()
         {
-                return _context.Productos
-                .Include(x=>x.Usuario)
-                .ToList();
+            return _context.Productos
+            .Include(x => x.Usuario)
+            .ToList();
         }
-
-        //public List<Producto> GetProductosFilter(string filtro)
-        //{
-        //    return _context.Productos.Where(p=>p.Descripcion.Contains(filtro)).ToList();    
-        //}
 
         public Producto createProducto(Producto producto)
         {
@@ -42,16 +38,13 @@ namespace SistemaGestionData.DataAccess
             return producto;
 
         }
-        public  Producto ObtenerProducto(int idproducto)
+        public Producto ObtenerProducto(int idproducto)
         {
-
-            Producto producto =  _context.Productos.FirstOrDefault(p => p.Id == idproducto);
+            Producto producto = _context.Productos.FirstOrDefault(p => p.Id == idproducto);
             return producto;
-
-
         }
 
-        public  void modificarProducto(int id, Producto producto)
+        public void modificarProducto(int id, Producto producto)
         {
 
             Producto productoActual = ObtenerProducto(id);
@@ -67,12 +60,11 @@ namespace SistemaGestionData.DataAccess
 
         }
         // Método para eliminar un producto, también recibiendo el contexto
-        public  void DeleteProducto(int id)
+        public void DeleteProducto(int id)
         {
-             var producto = ObtenerProducto(id);
+            var producto = ObtenerProducto(id);
             _context.Productos.Remove(producto);
             _context.SaveChanges(); // Guardar cambios en la base de datos
-
         }
     }
 }

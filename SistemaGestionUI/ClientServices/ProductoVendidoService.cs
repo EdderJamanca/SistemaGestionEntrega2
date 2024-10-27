@@ -18,6 +18,13 @@ namespace SistemaGestionUI.ClientServices
             return await _httpClient.GetFromJsonAsync<List<ProductoVendido>>("");
 
         }
+
+        
+        public async Task<List<ProductoVendido>> ObtenerProductosVendidos(int idventa)
+        {
+            return await _httpClient.GetFromJsonAsync<List<ProductoVendido>>($"detalle/{idventa}");
+
+        }
         public async Task<ProductoVendido?> GetOneProductoVendido(int id)
         {
             return await _httpClient.GetFromJsonAsync<ProductoVendido>($"{id}");

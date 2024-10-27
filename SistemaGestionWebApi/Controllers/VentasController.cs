@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SistemaGestionBussiness.Services;
 using SistemaGestionEntities;
 
@@ -6,11 +7,12 @@ namespace SistemaGestionWebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    //[Authorize]
     public class VentasController: ControllerBase
     {
         private readonly ILogger<VentasController> _logger;
-        private readonly VentasService _ventasService;
-        public VentasController(ILogger<VentasController> logger, VentasService ventasService)
+        private readonly IVentasService _ventasService;
+        public VentasController(ILogger<VentasController> logger, IVentasService ventasService)
         {
             _logger = logger;
             _ventasService = ventasService;
@@ -33,10 +35,10 @@ namespace SistemaGestionWebApi.Controllers
             return ventas;
         }
         [HttpPost]
-        public ActionResult<Venta> CreateVenta([FromBody] Venta venta)
+        public ActionResult<Venta?> CreateVenta([FromBody] Venta venta)
         {
             var ventaCreado =   _ventasService.CreateVenta(venta);
-            return CreatedAtAction(nameof(GetOneVenta), new { id = ventaCreado.Id }, ventaCreado);
+            return Ok(ventaCreado);
         }
         [HttpPut("{id}")]
         public ActionResult UpdateVenta([FromRoute(Name = "id")] int id, [FromBody] Venta venta)

@@ -1,4 +1,5 @@
 ﻿using SistemaGestionData.DataAccess;
+using SistemaGestionData.InterfaceDataAccess;
 using SistemaGestionEntities;
 using System;
 using System.Collections.Generic;
@@ -8,11 +9,20 @@ using System.Threading.Tasks;
 
 namespace SistemaGestionBussiness.Services
 {
-    public class ProductosService
+    public interface IProductosService
     {
-        private ProductosDataAccess _productosDataAccess;
+        Producto CreateProducto(Producto producto);
+        void DeleteProducto(int id);
+        Producto? GetOneProducto(int id);
+        List<Producto> GetProducts();
+        void UpdateProducto(int id, Producto producto);
+    }
 
-        public ProductosService(ProductosDataAccess productosDataAccess)
+    public class ProductosService : IProductosService
+    {
+        private IProductosDataAccess _productosDataAccess;
+
+        public ProductosService(IProductosDataAccess productosDataAccess)
         {
             _productosDataAccess = productosDataAccess;
         }
@@ -34,9 +44,9 @@ namespace SistemaGestionBussiness.Services
             return _productosDataAccess.createProducto(producto);
         }
 
-        public void UpdateProducto(int id,Producto producto)
+        public void UpdateProducto(int id, Producto producto)
         {
-            _productosDataAccess.modificarProducto(id,producto);
+            _productosDataAccess.modificarProducto(id, producto);
         }
         public void DeleteProducto(int id)
         {

@@ -21,9 +21,17 @@ namespace SistemaGestionUI.ClientServices
         {
             return await _httpClient.GetFromJsonAsync<Venta>($"{id}");
         }
-        public async Task CreateVenta(Venta venta)
+        public async Task<Venta> CreateVenta(Venta venta)
         {
-            await _httpClient.PostAsJsonAsync("", venta);
+            var response = await _httpClient.PostAsJsonAsync("", venta);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<Venta>();
+            } else
+            {
+                throw new HttpRequestException("Error al crear la venta: " + response.ReasonPhrase);
+            }
         }
 
         public async Task UpdateVenta(int id, Venta venta)

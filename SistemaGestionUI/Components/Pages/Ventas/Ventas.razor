@@ -1,6 +1,9 @@
 ﻿@page "/Ventas"
 @inject VentasServices Service
-<h3>Ventas</h3>
+@inject NavigationManager NavigationManager
+@inject ProductoVendidoService Servicepro
+@inject SweetAlertService Swal
+<h3 class="text-center">Ventas</h3>
 <div class="container">
     <div class="row">
         <div class="col-6">
@@ -15,13 +18,14 @@
             </div>
         </div>
     </div>
-    <div class="row">
-        <table class="table">
-            <thead class="thead-dark">
+    <div class="row mt-2">
+        <table class="table table-responsive-lg table-bordered mx-auto table-light">
+            <thead class="table-primary text-center">
                 <tr>
-                    <th>Id</th>
+                    <th>#</th>
                     <th>Comentario</th>
-                    <th>IdUsuario</th>
+                    <th>Usuario</th>
+                    <th>Productos Vendidos</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -29,16 +33,24 @@
                 @foreach (Venta venta in ventas)
                 {
                     <tr>
-                        <td>@venta.Id</td>
-                        <td>@venta.Comentario</td>
-                        <td>@venta.Usuario.Nombre @venta.Usuario.Apellido</td>
-                        <td>
+                        <td class="text-center">@index</td>
+                        <td class="text-center">@venta.Comentario</td>
+                        <td class="text-center">@venta.Usuario.Nombre @venta.Usuario.Apellido</td>
+                        <td class="text-center">
+                            <button @onclick="@(() => verDetalle(venta.Id))" class="btn btn-success">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
+                                    <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z" />
+                                    <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0" />
+                                </svg>
+                            </button>
+                        </td>
+                        <td class="text-center">
                             <button @onclick="@(() => EliminarVenta(venta.Id))" class="btn btn-danger">
                                 Eliminar
                             </button>
-                            <a href="/venta/@venta.Id/Editar">Editar</a>
                         </td>
                     </tr>
+                    index++;
                 }
             </tbody>
         </table>
@@ -49,8 +61,9 @@
 
 @code {
     private List<Venta> ventas = new List<Venta>();
-
+    private List<ProductoVendido> productovendido = new List<ProductoVendido>();
     private string filtro = string.Empty;
+    public int index { get; set; } = 1;
 
     protected override async Task OnInitializedAsync()
     {
@@ -60,7 +73,37 @@
 
     public async Task EliminarVenta(int id)
     {
-        await Service.DeleteVenta(id);
-        ventas = await Service.GetVentas();
+        productovendido = await Servicepro.ObtenerProductosVendidos(id);
+        var resultado = await Swal.FireAsync(new SweetAlertOptions
+            {
+                Title = "¿Estas seguro?",
+                Text = "se eliminar la Venta",
+                Icon = SweetAlertIcon.Warning,
+                ShowCancelButton = true,
+                ConfirmButtonText = "Si, continuar",
+                CancelButtonText = "No, cancelar"
+            });
+        var confirmado = !string.IsNullOrEmpty(resultado.Value);
+        if (confirmado && resultado.IsConfirmed)
+        {
+            for (int i = 0; i < productovendido.Count(); i++)
+            {
+                await Servicepro.DeleteProductoVendido(productovendido[i].Id);
+            }
+
+            await Service.DeleteVenta(id);
+            ventas = await Service.GetVentas();
+
+
+
+        }
+    }
+    public async Task verDetalle(int idventa)
+    {
+        NavigationManager.NavigateTo($"/ProductoVendidos/{idventa}");
+    }
+    public async Task EditarVenta(int id)
+    {
+        NavigationManager.NavigateTo("/venta/"+id+"/Editar");
     }
 }

@@ -1,0 +1,61 @@
+﻿@inject NavigationManager uriHelper
+@inject UsuariosService usuarioService
+@inject SistemaGestionUI.ClientServices.AuthService authService
+@inject SweetAlertService Swal
+
+<div class="container-full">
+    <div class="container min-vh-100 d-flex justify-content-center align-items-center">
+        <div class="width-login border px-5 py-4 rounded-3 bg-white shadow-xl">
+            <h1 class="text-center fw-bold border-top border-bottom mb-1 border-black py-2">SISTEMA DE GESTIÓN</h1>
+
+            <div class="form-group mb-3 mt-5">
+                <label for="email">Email:</label>
+                <input @bind="email" id="email" type="email" class="form-control" placeholder="Ingrese email" />
+            </div>
+            <div class="form-group mb-3">
+                <label for="password">Password:</label>
+                <input @bind="password" id="password" type="password" class="form-control" placeholder="Ingrese password" />
+            </div>
+            <div class="d-grid mb-3">
+                <button @onclick="HandleLogin" class="btn btn-primary btn-md">Login</button>
+            </div>
+           @*  <div class="d-flex justify-content-center">
+                <a href="./RegisterUsuario" class="text-sm-center text-primary nav-link text-decoration-none">¿No tiene una Cuenta?</a>
+            </div> *@
+        </div>
+    </div>
+</div>
+
+@code {
+    private string email;
+    private string password;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+    }
+
+    private async Task HandleLogin()
+    { try
+        {
+            
+            AuthDto authData = new AuthDto() { Email = email, Password = password };
+                ResponseLoginDto data =await usuarioService.login(authData);
+                if(data.token != null) {
+                    await authService.Login(data.token);
+                    uriHelper.NavigateTo("/");
+                }
+        }
+        catch (Exception ex)
+        {
+            var resultado = await Swal.FireAsync(new SweetAlertOptions
+                {
+                    Title = "La contraseña o email son incorrectos",
+                    Icon = SweetAlertIcon.Error,
+                    ConfirmButtonText = "Ok"
+                });
+           
+        }
+    
+    }
+}

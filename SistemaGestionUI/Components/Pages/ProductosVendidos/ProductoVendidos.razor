@@ -1,47 +1,47 @@
-﻿@page "/ProductoVendidos"
+﻿@page "/ProductoVendidos/{idventa:int}"
 @inject ProductoVendidoService Service
-<h3>Producto Vendidos</h3>
+@inject NavigationManager NavigationManager
+@inject SweetAlertService Swal
+<h3 class="text-center">Productos Vendidos</h3>
 
 <div class="container">
     <div class="row">
         <div class="col-6">
             <div class="row">
                 <div class=col-6>
-                    <a href="/productovendido/new">
+                    <a href="/Ventas">
                         <button class="btn btn-success">
-                            Nueva Producto Vendidos
+                            Regresar
                         </button>
                     </a>
                 </div>
             </div>
         </div>
     </div>
-    <div class="row">
-        <table class="table">
-            <thead class="thead-dark">
+    <div class="row mt-2">
+        <table class="table table-responsive-lg table-bordered mx-auto table-light">
+            <thead class="table-primary text-center">
                 <tr>
-                    <th>Id</th>
-                    <th>IdProducto</th>
+                    <th>#</th>
+                    <th>Producto</th>
                     <th>Stock</th>
-                    <th>IdVenta</th>
-                    <th>Acciones</th>
+                    <th>Accion</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (ProductoVendido pvendido in productovendido)
                 {
                     <tr>
-                        <td>@pvendido.Id</td>
-                        <td>@pvendido.producto.Descripcion</td>
-                        <td>@pvendido.Stock</td>
-                        <td>@pvendido.producto.Descripcion</td>
+                        <td class="text-center">@index</td>
+                        <td class="text-center">@pvendido.producto.Descripcion</td>
+                        <td class="text-center">@pvendido.Stock</td>   
                         <td>
-                            <button @onclick="@(() => EliminarProductoVendido(pvendido.Id))" class="btn btn-danger">
+                            <button @onclick="@(() => EliminarProductoVendido(@pvendido.Id))" class="btn btn-danger">
                                 Eliminar
                             </button>
-                            <a href="/usuariio/@pvendido.Id/Editar">Editar</a>
                         </td>
                     </tr>
+                    index++;
                 }
             </tbody>
         </table>
@@ -51,19 +51,43 @@
 
 
 @code {
+    [Parameter]
+    public int idventa { get; set; }
+
     private List<ProductoVendido> productovendido = new List<ProductoVendido>();
 
     private string filtro = string.Empty;
+    public int index { get; set; } = 1;
 
     protected override async Task OnInitializedAsync()
     {
 
-        productovendido = await Service.GetProductsVendido();
+        productovendido = await Service.ObtenerProductosVendidos(idventa);
     }
 
     public async Task EliminarProductoVendido(int id)
     {
-        await Service.DeleteProductoVendido(id);
-        productovendido = await Service.GetProductsVendido();
+        var resultado = await Swal.FireAsync(new SweetAlertOptions
+            {
+                Title = "¿Estas seguro?",
+                Text = "se eliminar el producto vendido",
+                Icon = SweetAlertIcon.Warning,
+                ShowCancelButton = true,
+                ConfirmButtonText = "Si, continuar",
+                CancelButtonText = "No, cancelar"
+            });
+        var confirmado = !string.IsNullOrEmpty(resultado.Value);
+        if (confirmado && resultado.IsConfirmed)
+        {
+            await Service.DeleteProductoVendido(id);
+            productovendido = await Service.GetProductsVendido();
+
+        }
     }
+
+    // public async Task EditarProducoVendido(int id)
+    // {
+    //     NavigationManager.NavigateTo("/productosvendidos/"+id+"/editar");
+    // }
+
 }

@@ -13,6 +13,9 @@
     <Folder Include="Components\Pages\Productos\" />
     <Folder Include="Components\Pages\Usuarios\" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="CurrieTechnologies.Razor.SweetAlert2" Version="5.6.0" />
+  </ItemGroup>
   
   
 </Project>
